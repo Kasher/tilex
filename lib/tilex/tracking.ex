@@ -1,3 +1,5 @@
+require Logger
+
 defmodule Tilex.Tracking do
   alias Tilex.Repo
   alias Tilex.Request
@@ -7,6 +9,7 @@ defmodule Tilex.Tracking do
   import Tilex.QueryHelpers, only: [between: 3, matches?: 2]
 
   @request_tracking Application.get_env(:tilex, :request_tracking, false)
+  Logger.info("ROEE @request_tracking is #{@request_tracking}")
 
   def track(conn) do
     spawn(fn ->
@@ -14,6 +17,11 @@ defmodule Tilex.Tracking do
         with [referer | _] <- Plug.Conn.get_req_header(conn, "referer") do
           page = String.replace(referer, Endpoint.url(), "")
           Ecto.Adapters.SQL.query!(Repo, "insert into requests (page) values ($1);", [page])
+        end
+      else
+        with [referer | _] <- Plug.Conn.get_req_header(conn, "referer") do
+          page = String.replace(referer, Endpoint.url(), "")
+          Logger.info("ROEE not tracking requests. @request_tracking is #{@request_tracking}, page is #{page}")
         end
       end
     end)
