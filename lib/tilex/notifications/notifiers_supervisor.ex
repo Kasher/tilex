@@ -1,6 +1,7 @@
 defmodule Tilex.Notifications.NotifiersSupervisor do
   @slack_notifier Application.get_env(:tilex, :slack_notifier)
   @twitter_notifier Application.get_env(:tilex, :twitter_notifier)
+  @google_chat_notifier Application.get_env(:tilex, :google_chat_notifier)
 
   use Supervisor
 
@@ -15,6 +16,7 @@ defmodule Tilex.Notifications.NotifiersSupervisor do
   def children do
     [
       @slack_notifier,
+      @google_chat_notifier,
       @twitter_notifier
     ]
   end
